@@ -14,7 +14,7 @@ from statistics import mean
 from pathlib import Path
     
 from datasets import createDatasetFromEEGEvents, createDatasetFromEEGWithoutEvents, createDatasets
-from modelDev import trainModel, evaluateModel
+from modelDev import trainModel, evaluateModel, trainMLPModel, evaluateMLPModel
 from models import getModel
 
 def main():
@@ -40,7 +40,8 @@ def main():
     pbar = tqdm(range(1, PSDComponentsUpperLimit+1)) #Number of PSD components from 1 to maximum in increments of 20.
     #pbar = tqdm(range(129, 130)) 
     
-    modelOptions = ["Perceptron",
+    modelOptions = ["MLP",
+                    "Perceptron",
                     "LDA", 
                     "SVM",
                     "Logistic Regression"
@@ -123,10 +124,13 @@ def main():
                                                                             noEvent_eeg_PSD_train,
                                                                             brakingEvent_eeg_PSD_val,
                                                                             noEvent_eeg_PSD_val)
-                model = getModel(selectedModel)
-                
-                trainedModel = trainModel(model, trainData, trainLabels)
-                AUCaccuracy = evaluateModel(trainedModel, selectedModel, valData, valLabels)
+                if selectedModel == "MLP":
+                    valResults = trainMLPModel(trainData, trainLabels, valData, valLabels)
+                    AUCaccuracy = valResults[1]
+                else:
+                    model = getModel(selectedModel)
+                    trainedModel = trainModel(model, trainData, trainLabels)
+                    AUCaccuracy = evaluateModel(trainedModel, selectedModel, valData, valLabels)
                 allTestSubjectAUCs.append(AUCaccuracy)
             grandAverageAUC = round(mean(allTestSubjectAUCs), 3)
             print("Number of PSD components = ", numberOfPSDComponents, " | AUC accuracy = ", grandAverageAUC)
