@@ -5,6 +5,9 @@ The original EEG data are part of a dataset from Haufe et al. called "Emergency 
 """
 import numpy as np
 import h5py
+import subprocess
+import os
+import sys
 from glob import glob
 from tqdm import tqdm
 from statistics import mean
@@ -15,7 +18,12 @@ from modelDev import trainModel, evaluateModel
 from models import getModel
 
 def main():
-    #Find all paths for the test subject data.
+    #Get test subject data
+    print("Downloading dataset...")
+    os.chdir(r"../EEG_Dataset_Haufe/")
+    cmd = "wget -i links.txt -c --no-check-certificate"
+    subprocess.check_call(cmd, shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+    os.chdir(r"../code/")
     testSubjectDataFilePaths =  glob('../EEG_Dataset_Haufe/*.mat')
 
     PSDComponentsUpperLimit = 129 #129 = Maximum number of power spectral density (PSD) components for samplingRate = 200 hz.
