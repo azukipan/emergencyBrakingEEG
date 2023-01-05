@@ -51,9 +51,9 @@ def trainMLPModel(trainData, trainLabels, valData, valLabels):
     # Hidden layers
     visible = Input(shape=(n_inputs,))
     x = Dense(64)(visible)
-    x = BatchNormalization()(x)
+    #x = BatchNormalization()(x)
     x = Dense(32)(x)
-    x = BatchNormalization()(x)
+    #x = BatchNormalization()(x)
     # output layer
     output = Dense(1, activation='sigmoid')(x)
     #output = Dense(1, activation='sigmoid')(visible)
@@ -64,7 +64,7 @@ def trainMLPModel(trainData, trainLabels, valData, valLabels):
               metrics=[tf.keras.metrics.AUC(), tf.keras.metrics.Accuracy()])
     # fit the autoencoder model to reconstruct input
     model.fit(trainData, trainLabels, epochs=50, batch_size=1, verbose=2, validation_split = 0.2)
-    valResults = evaluateModel(model, valData, valLabels)
+    valResults = evaluateMLPModel(model, valData, valLabels)
     return valResults
 
 def evaluateMLPModel(model, valData, valLabels):
