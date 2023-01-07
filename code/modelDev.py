@@ -1,18 +1,15 @@
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import roc_auc_score
 import numpy as np
 
 #Definitions for model development.
-
 def trainModel(model, trainData, trainLabels):
     
     model.fit(np.array(trainData), trainLabels)
     
     return model
-
-
 
 def evaluateModel(model, selectedModel, valData, valLabels):
     #Validate model
@@ -43,27 +40,30 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import BatchNormalization
 
 def trainMLPModel(trainData, trainLabels, valData, valLabels):
-    # number of input columns for autoencoder
+    # Number of input columns 
     n_inputs = trainData.shape[1]
     # Hidden layers
     visible = Input(shape=(n_inputs,))
     x = Dense(64)(visible)
-    #x = BatchNormalization()(x)
     x = Dense(32)(x)
-    #x = BatchNormalization()(x)
-    # output layer
+    x = Dense(16)(x)
+    # Output layer
     output = Dense(1, activation='sigmoid')(x)
-    #output = Dense(1, activation='sigmoid')(visible)
-    # define autoencoder model
+    # Define model
     model = Model(inputs=visible, outputs=output)
-    # compile autoencoder model
+    # Compile model
     model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(),
               metrics=[tf.keras.metrics.AUC(), tf.keras.metrics.Accuracy()])
-    # fit the autoencoder model to reconstruct input
-    model.fit(trainData, trainLabels, epochs=50, batch_size=1, verbose=2, validation_split = 0.2)
+    # Rescale data to be between 0 and 1
+    scaler = MinMaxScaler()
+    scaler.fit(trainData)
+    trainData = scaler.transform(trainData)
+    valData = scaler.transform(valData)
+    # Train model
+    model.fit(trainData, trainLabels, epochs=100, batch_size=32, verbose=2, validation_split = 0.2)
+    # Validate model
     valResults = evaluateMLPModel(model, valData, valLabels)
     return valResults
 
