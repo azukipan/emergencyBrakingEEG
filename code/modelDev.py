@@ -40,15 +40,19 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LeakyReLU
 
 def trainMLPModel(trainData, trainLabels, valData, valLabels):
     # Number of input columns 
     n_inputs = trainData.shape[1]
-    # Hidden layers
     visible = Input(shape=(n_inputs,))
+    # Hidden layers
     x = Dense(64)(visible)
+    x = LeakyReLU()(x)
     x = Dense(32)(x)
+    x = LeakyReLU()(x)
     x = Dense(16)(x)
+    x = LeakyReLU()(x)
     # Output layer
     output = Dense(1, activation='sigmoid')(x)
     # Define model
@@ -62,7 +66,7 @@ def trainMLPModel(trainData, trainLabels, valData, valLabels):
     trainData = scaler.transform(trainData)
     valData = scaler.transform(valData)
     # Train model
-    model.fit(trainData, trainLabels, epochs=100, batch_size=32, verbose=2, validation_split = 0.2)
+    model.fit(trainData, trainLabels, epochs=200, batch_size=32, verbose=2, validation_split = 0.2)
     # Validate model
     valResults = evaluateMLPModel(model, valData, valLabels)
     return valResults
