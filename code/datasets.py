@@ -33,9 +33,11 @@ def createDatasetFromEEGEvents(timestamps, data, samplingRate, numberOfPSDCompon
                                                             samplingRate
                                                             )
         if time < len(data)*1000*dt/2:
-            brakingEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+            #brakingEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+            brakingEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[0:numberOfPSDComponents].tolist())
             continue
-        brakingEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+        #brakingEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+        brakingEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[0:numberOfPSDComponents].tolist())
         
     return brakingEvent_eeg_PSD_train, brakingEvent_eeg_PSD_val
 
@@ -79,9 +81,11 @@ def createDatasetFromEEGWithoutEvents(timestamps, data, samplingRate, numberOfPS
                                                                 )
             
             if timestamps[i][0] < len(data)*1000*dt/2: #Check if timestamp is less half than total time of EEG data.
-                noEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+                #noEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+                noEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[0:numberOfPSDComponents].tolist())
                 continue
-            noEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+            #noEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+            noEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[0:numberOfPSDComponents].tolist())
            
         if i == len(timestamps): #If iteration reaches last event timestamp, set indices to get any possible EEG segment beyond timestamp.
             numberOfSegments = int((len(data)*1000*dt/2-timestamps[i][0])/2000) #Calculate how many user-specified EEG segments can fit between two events.
@@ -98,9 +102,11 @@ def createDatasetFromEEGWithoutEvents(timestamps, data, samplingRate, numberOfPS
                                                                     samplingRate
                                                                     )
                 if timestamps[i][0] < len(data)*1000*dt/2:
-                    noEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+                    #noEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+                    noEvent_eeg_PSD_train.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[0:numberOfPSDComponents].tolist())
                     continue
-                noEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+                #noEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[-numberOfPSDComponents:None].tolist())
+                noEvent_eeg_PSD_val.append(np.sort(np.sum(pwr_spectral_density_data[0],1))[0:numberOfPSDComponents].tolist())
         
     return noEvent_eeg_PSD_train, noEvent_eeg_PSD_val
 
