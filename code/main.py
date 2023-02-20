@@ -40,8 +40,8 @@ def main():
     pbar = tqdm(range(1, PSDComponentsUpperLimit+1)) #Number of PSD components from 1 to maximum in increments of 20.
     #pbar = tqdm(range(129, 130)) 
     
-    modelOptions = ["MLP",
-                    "Perceptron",
+    modelOptions = [#"MLP",
+                    #"Perceptron",
                     "LDA", 
                     "SVM",
                     "Logistic Regression"

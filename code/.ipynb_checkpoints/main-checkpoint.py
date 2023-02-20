@@ -5,17 +5,26 @@ The original EEG data are part of a dataset from Haufe et al. called "Emergency 
 """
 import numpy as np
 import h5py
+import subprocess
+import os
+import sys
 from glob import glob
 from tqdm import tqdm
 from statistics import mean
-
+from pathlib import Path
+    
 from datasets import createDatasetFromEEGEvents, createDatasetFromEEGWithoutEvents, createDatasets
-from modelDev import trainModel, evaluateModel
+from modelDev import trainModel, evaluateModel, trainMLPModel, evaluateMLPModel
 from models import getModel
 
 def main():
-    #Find all paths for the test subject data.
-    testSubjectDataFilePaths =  glob('../../EEG_Dataset_Haufe/*.mat')
+    #Get test subject data
+    print("Downloading dataset...")
+    os.chdir(r"../EEG_Dataset_Haufe/")
+    cmd = "wget -i links.txt -c --no-check-certificate"
+    subprocess.check_call(cmd, shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+    os.chdir(r"../code/")
+    testSubjectDataFilePaths =  glob('../EEG_Dataset_Haufe/*.mat')
 
     PSDComponentsUpperLimit = 129 #129 = Maximum number of power spectral density (PSD) components for samplingRate = 200 hz.
 
@@ -29,17 +38,22 @@ def main():
     
     #Setup progress bar
     pbar = tqdm(range(1, PSDComponentsUpperLimit+1)) #Number of PSD components from 1 to maximum in increments of 20.
-    #pbar = tqdm(range(1, 3)) 
+    #pbar = tqdm(range(129, 130)) 
     
-    modelOptions = ["LDA", 
+    modelOptions = [#"MLP",
+                    #"Perceptron",
+                    "LDA", 
                     "SVM",
-                    "Perceptron",
                     "Logistic Regression"
                    ]
     
+    #Create model development results folder.
+    p = Path("../results")
+    p.mkdir(exist_ok=True)
+    
     for selectedModel in modelOptions:
         #Create log file for AUCs and number of PSD components.
-        AUCLog = open("{}_AUC.csv".format(selectedModel), "a+")
+        AUCLog = open("../results/{}_AUC.csv".format(selectedModel), "a+")
         AUCLog.write("Number of Components,Area Under Curve\n") #Headers
         AUCLog.close()
 
@@ -105,24 +119,26 @@ def main():
                     for array in event_eeg_PSD_val: brakingEvent_eeg_PSD_val.append(array)
                     for array in _noEvent_eeg_PSD_train: noEvent_eeg_PSD_train.append(array)
                     for array in _noEvent_eeg_PSD_val: noEvent_eeg_PSD_val.append(array)
-
+                
                 trainData, trainLabels, valData, valLabels = createDatasets(brakingEvent_eeg_PSD_train,
                                                                             noEvent_eeg_PSD_train,
                                                                             brakingEvent_eeg_PSD_val,
                                                                             noEvent_eeg_PSD_val)
-                model = getModel(selectedModel)
-                trainedModel = trainModel(model, trainData, trainLabels)
-                AUCaccuracy = evaluateModel(trainedModel, valData, valLabels)
+                if selectedModel == "MLP":
+                    valResults = trainMLPModel(trainData, trainLabels, valData, valLabels)
+                    AUCaccuracy = valResults[1]
+                else:
+                    model = getModel(selectedModel)
+                    trainedModel = trainModel(model, trainData, trainLabels)
+                    AUCaccuracy = evaluateModel(trainedModel, selectedModel, valData, valLabels)
                 allTestSubjectAUCs.append(AUCaccuracy)
-
             grandAverageAUC = round(mean(allTestSubjectAUCs), 3)
             print("Number of PSD components = ", numberOfPSDComponents, " | AUC accuracy = ", grandAverageAUC)
-
+            
             #Save AUC and number of PSD components.
-            AUCLog = open("modelAUC{}.csv".format(selectedModel), "a+")
+            AUCLog = open("../results/{}_AUC.csv".format(selectedModel), "a+")
             AUCLog.write("{},{}\n".format(numberOfPSDComponents, grandAverageAUC))
             AUCLog.close()
         
-
 if __name__ == "__main__":
     main()
