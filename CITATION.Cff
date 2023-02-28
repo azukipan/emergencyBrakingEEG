@@ -1,0 +1,7 @@
+@software{EEG_Classification_Emergency_Braking,
+  author = {Nacpil, Edric John Cruz},
+  title = {{Emergency Braking Prediction During Driving Simulations Using SVM Classification of EEGs}},
+  url = {https://github.com/azukipan/emergencyBrakingEEG},
+  version = {1.0.0},
+  year = {2023}
+}
