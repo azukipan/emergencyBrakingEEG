@@ -16,7 +16,7 @@ authors:
 - family-names: "Jeon"
   given-names: "Il"
   ocrid: "https://orcid.org/0000-0002-4220-8374"
-title: "Emergency Braking Prediction During Driving Simulations Using SVM Classification of EEGs"
+title: "EEG-based Emergency Braking Prediction Using Data Ablation and SVM Classification"
 version: 1.0.0
 date-released: 2023-02-28
 url: "https://github.com/azukipan/emergencyBrakingEEG"
