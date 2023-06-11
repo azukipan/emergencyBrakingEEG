@@ -7,6 +7,15 @@ authors:
 - family-names: "Wang"
   given-names: "Zheng"
   ocrid: "https://orcid.org/0000-0002-7589-7954"
+- family-names: "Guan"
+  given-names: "Muhua"
+  ocrid: "https://orcid.org/0000-0002-7478-6152"
+ - family-names: "Nakano"
+  given-names: "Kimihiko"
+  ocrid: "https://orcid.org/0000-0003-3532-960X"
+- family-names: "Jeon"
+  given-names: "Il"
+  ocrid: "https://orcid.org/0000-0002-4220-8374"
 title: "Emergency Braking Prediction During Driving Simulations Using SVM Classification of EEGs"
 version: 1.0.0
 date-released: 2023-02-28
